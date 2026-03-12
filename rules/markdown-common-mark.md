@@ -1,0 +1,1 @@
+При составлении любых Markdown-файлов обеспечивай соответствие формата CommonMark Spec (https://spec.commonmark.org/) и отсутствие ошибок при валидации markdownlint.
