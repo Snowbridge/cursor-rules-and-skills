@@ -1,0 +1,38 @@
+---
+description: Карта multi-root workspace — где искать ADR, спецификации, референсы
+alwaysApply: true
+---
+
+# Карта workspace
+
+## Порядок чтения при новой задаче
+1. ADR: `documentation/ADR/index.md` — только релевантные ADR, не весь каталог
+2. Спецификация сервиса: `documentation/specifications/microservices/<группа>/<сервис>/`
+3. Реализация: `application/<группа>/<сервис>/`
+4. Не сканировать весь workspace — идти по этой карте
+5. **При работе в `application/`:** skill `microservice-defaults` + rule `application/.cursor/rules/microservice-implementation.mdc` + `application/.cursor/skills/microservice-defaults/reference.md`. Не исследовать repo и не открывать `currencies-crud` без явной просьбы
+
+## Где что лежит
+| Что | Где | Когда читать |
+|-----|-----|--------------|
+| ADR | `documentation/ADR/` | Архитектурные ограничения |
+| Спецификации | `documentation/specifications/` | Контракты REST/Kafka — источник истины |
+| Архитектура | `documentation/architecture/` | Архитектурная модель системы в формате archimate (Archi) |
+| Сервисы | `application/` | Реализация |
+| Libs | `libs/` | Общие библиотеки и Gradle-gплагины |
+| Среды | `deployments/` | Деплой-конфиги |
+
+## Референсные сервисы (эталон реализации)
+| Задача | Смотреть |
+|--------|----------|
+| Паттерны реализации (без чтения кода) | `application/.cursor/skills/microservice-defaults/reference.md` |
+| CRUD + jOOQ + Flyway + OpenAPI codegen | `application/currency-valuables/currencies-crud` (только по явной просьбе) |
+| Интеграционные тесты + Testcontainers | `reference.md` + `libs/gradle/database-test-support` |
+| Спецификация сервиса | `specifications/microservices/currency-valuables/currencies-crud/` |
+
+## Запрещено без явной просьбы
+- Полный обход всех корней workspace
+- Чтение build/, bin/, .gradle/, target/
+- Заглядывать в соседние ветки репозитория
+- Дублирование содержимого ADR в ответ — ссылаться на файл
+- Обзорный exploration и чтение `currencies-crud` для стандартных CRUD-задач (достаточно rule/skill/reference)

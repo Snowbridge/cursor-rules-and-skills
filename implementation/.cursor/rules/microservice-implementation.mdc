@@ -1,0 +1,59 @@
+---
+description: Паттерны реализации микросервисов без повторного обхода repo
+globs: application/**/*.{kt,kts,yaml,properties}
+alwaysApply: false
+---
+
+# Реализация микросервисов
+
+## Порядок работы
+
+1. Спецификация: `documentation/specifications/microservices/<группа>/<сервис>/`
+2. Релевантные ADR: `documentation/ADR/index.md` — только по теме задачи
+3. Код **только** целевого сервиса: `application/<группа>/<сервис>/` (если уже есть)
+4. Реализация по skill `microservice-defaults` и [reference.md](../skills/microservice-defaults/reference.md)
+
+## Запрещено без явной просьбы
+
+- Обзорный exploration репозитория
+- Открывать `application/currency-valuables/currencies-crud` для стандартного CRUD/Kafka/Feign
+
+Исключение: новый паттерн, которого нет в reference.md, или пользователь явно просит исследование.
+
+## Структура пакетов
+
+`web/`, `service/`, `repository/`, `domain/`, `mapping/`, `kafka/` — по образцу эталона.
+
+## Gradle
+
+Плагины: `kotlin jvm 2.1.20`, `plugin.spring`, `spring-boot 3.5.14`, `dependency-management 1.1.7`, `com.vimpishsnorfle.database-test 0.1.0`, `com.vimpishsnorfle.jib 0.1.0`, `jacoco`. Java 21. Spring Cloud BOM `2025.0.2`.
+
+Зависимости: `com.vimpishsnorfle.rest:*`, `com.vimpishsnorfle.jooq:*`, `com.vimpishsnorfle.messaging:*`, `crud-web-error-support`, `jooq-query-support`.
+
+## REST
+
+`@RestController` implements generated `V1*ControllerApi`; DTO из `*.model.*`. `GlobalExceptionHandler` extends `CrudExceptionHandlerSupport`.
+
+## jOOQ
+
+`@Repository` + `DSLContext`; static imports таблиц и records; `applyListSort`, `ClockSupport`. Raw SQL запрещён.
+
+## Kafka
+
+Consumer implements generated `*Consumer` или `Consumer<Message<Dto>>`. Producer — generated messaging DTO.
+
+## Feign
+
+`@EnableFeignClients` на application-классе. Для соседних сервисов: `interface XxxClient : V1*ControllerApi`.
+
+## Тесты
+
+jacoco minimum `0.70`, `check` → `jacocoTestCoverageVerification`. `@SpringBootTest` + `@Import(TestcontainersConfiguration)` + `@ActiveProfiles("test")`. Плагин `database-test`.
+
+## Flyway
+
+Миграции в `data-schemas/<группа>/<схема>/src/main/sql/`, не в сервисе.
+
+## Детали
+
+Пути к эталону и образцы кода — [reference.md](../skills/microservice-defaults/reference.md).
