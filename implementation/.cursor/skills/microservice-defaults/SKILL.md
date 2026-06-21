@@ -22,10 +22,10 @@ Contracts: `documentation/specifications/microservices/...`. Patterns: [referenc
 ## Requirements
 
 1. Stack: kotlin, spring-boot, kafka, postgres
-2. jOOQ: generated `com.pitipiwpiw-wiw-wiw.jooq:*`; no raw SQL; prefer DSL close to SQL, avoid imperative query assembly
-3. REST: generated `com.pitipiwpiw-wiw-wiw.rest:*` DTO and `*Api`
-4. Kafka: generated `com.pitipiwpiw-wiw-wiw.messaging:*`
-5. Outbound REST: OpenFeign + `com.pitipiwpiw-wiw-wiw.rest` DTO/interfaces
+2. jOOQ: generated `com.vimpishsnorfle.jooq:*`; no raw SQL; prefer DSL close to SQL, avoid imperative query assembly
+3. REST: generated `com.vimpishsnorfle.rest:*` DTO and `*Api`
+4. Kafka: generated `com.vimpishsnorfle.messaging:*`
+5. Outbound REST: OpenFeign + `com.vimpishsnorfle.rest` DTO/interfaces
 6. Logging (SLF4J/logback): log key decisions and outcomes; traceable what/why
 7. Tests: ≥70% line coverage (jacoco)
 8. DRY, SRP

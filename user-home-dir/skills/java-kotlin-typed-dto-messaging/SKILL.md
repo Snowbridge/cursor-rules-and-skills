@@ -15,7 +15,7 @@ If not type-safe without permission — **stop**; state blocker and need (permis
 
 ## Kafka & REST
 
-Generated artifacts: `com.pitipiwpiw-wiw-wiw.messaging:*`, `com.pitipiwpiw-wiw-wiw.rest:*`.
+Generated artifacts: `com.vimpishsnorfle.messaging:*`, `com.vimpishsnorfle.rest:*`.
 
 **Forbidden** (unless allowed):
 - `Map<String, Any>` / `Object` / raw JSON as contract body
@@ -28,7 +28,7 @@ Generated artifacts: `com.pitipiwpiw-wiw-wiw.messaging:*`, `com.pitipiwpiw-wiw-w
 
 ## jOOQ
 
-Generated `com.pitipiwpiw-wiw-wiw.jooq:*` — no raw SQL.
+Generated `com.vimpishsnorfle.jooq:*` — no raw SQL.
 
 **Forbidden:** `dsl.fetch("SELECT...")`, native `@Query`, `jdbcTemplate`, string SQL assembly.
 

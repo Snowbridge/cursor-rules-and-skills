@@ -26,9 +26,9 @@ Exception: new pattern missing from reference.md, or user asks to explore.
 
 ## Gradle
 
-Plugins: `kotlin jvm 2.1.20`, `plugin.spring`, `spring-boot 3.5.14`, `dependency-management 1.1.7`, `com.pitipiwpiw-wiw-wiw.database-test 0.1.0`, `com.pitipiwpiw-wiw-wiw.jib 0.1.0`, `jacoco`. Java 21. Spring Cloud BOM `2025.0.2`.
+Plugins: `kotlin jvm 2.1.20`, `plugin.spring`, `spring-boot 3.5.14`, `dependency-management 1.1.7`, `com.vimpishsnorfle.database-test 0.1.0`, `com.vimpishsnorfle.jib 0.1.0`, `jacoco`. Java 21. Spring Cloud BOM `2025.0.2`.
 
-Deps: `com.pitipiwpiw-wiw-wiw.rest:*`, `jooq:*`, `messaging:*`, `crud-web-error-support`, `jooq-query-support`.
+Deps: `com.vimpishsnorfle.rest:*`, `jooq:*`, `messaging:*`, `crud-web-error-support`, `jooq-query-support`.
 
 ## REST
 
