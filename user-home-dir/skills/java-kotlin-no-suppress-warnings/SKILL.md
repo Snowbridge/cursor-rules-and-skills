@@ -1,30 +1,27 @@
 ---
 name: java-kotlin-no-suppress-warnings
-description: Enforces fixing Java/Kotlin/Spring warnings at the source instead of suppressing them. Use when writing or editing Java, Kotlin, Spring Boot, or Spring code; when the user mentions warnings, lint, or @Suppress; or when working in any JVM/Spring project.
+description: Fix Java/Kotlin/Spring warnings at source, never suppress. Use for JVM/Spring code, warnings, lint, or @Suppress.
 ---
 
-# Java/Kotlin + Spring: no warning suppression
+# No warning suppression
 
 ## Rule
 
-Строго запрещено гасить варнинги аннотациями вроде `@Suppress` (и эквивалентами: `@SuppressWarnings`, `@file:Suppress`, `@kotlin.Suppress`, IDE/local `//noinspection`, `@SuppressLint` и т.п.).
+Never silence warnings with `@Suppress`, `@SuppressWarnings`, `@file:Suppress`, `//noinspection`, `@SuppressLint`, etc.
 
-**Единственное исключение** — если пользователь **прямо в тексте задачи** разрешил подавлять варнинги.
+**Exception:** user explicitly allows suppression in the task.
 
-Если задачу **нельзя решить без подавления** и явного разрешения нет — **прервать выполнение** и сообщить пользователю:
-- какой варнинг мешает;
-- почему исправление «в корне» не удалось в рамках задачи;
-- что нужно: разрешение на suppress **или** уточнение требований.
+If suppression is the only fix and not allowed — **stop** and report: which warning, why root fix failed in scope, need permission or requirement change.
 
-Не подбирать обходные suppress «тихо» и не предлагать их по умолчанию.
+Do not add suppress silently or by default.
 
-## Что делать вместо suppress
+## Instead
 
-1. Исправить причину: типы, null-safety, неиспользуемые символы, deprecated API → замена, generics, рефакторинг.
-2. Если варнинг ложный — перестроить код так, чтобы анализатор перестал ругаться (без suppress).
-3. Если без suppress нужны изменения вне scope задачи — остановиться и спросить.
+1. Fix cause: types, null-safety, unused symbols, deprecated API.
+2. If false positive — restructure code so analyzer passes (no suppress).
+3. If fix is out of scope — stop and ask.
 
-## Проверка перед завершением
+## Before done
 
-- [ ] В diff нет новых `@Suppress*` / `//noinspection` / `@SuppressLint`
-- [ ] Если suppress есть — в задаче было явное разрешение, процитировано в ответе
+- [ ] No new `@Suppress*` / `//noinspection` / `@SuppressLint` in diff
+- [ ] If suppress present — explicit user permission quoted in reply

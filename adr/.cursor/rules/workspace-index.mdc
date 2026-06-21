@@ -1,38 +1,38 @@
 ---
-description: Карта multi-root workspace — где искать ADR, спецификации, референсы
+description: Multi-root workspace map — ADR, specs, references
 alwaysApply: true
 ---
 
-# Карта workspace
+# Workspace map
 
-## Порядок чтения при новой задаче
-1. ADR: `documentation/ADR/index.md` — только релевантные ADR, не весь каталог
-2. Спецификация сервиса: `documentation/specifications/microservices/<группа>/<сервис>/`
-3. Реализация: `application/<группа>/<сервис>/`
-4. Не сканировать весь workspace — идти по этой карте
-5. **При работе в `application/`:** skill `microservice-defaults` + rule `application/.cursor/rules/microservice-implementation.mdc` + `application/.cursor/skills/microservice-defaults/reference.md`. Не исследовать repo и не открывать `currencies-crud` без явной просьбы
+## Read order (new task)
+1. ADR: `documentation/ADR/index.md` — relevant only, not full catalog
+2. Service spec: `documentation/specifications/microservices/<group>/<service>/`
+3. Code: `application/<group>/<service>/`
+4. Do not scan whole workspace — follow this map
+5. **`application/` tasks:** skill `microservice-defaults` + rule `microservice-implementation.mdc` + `reference.md`. No repo exploration; do not open `currencies-crud` unless asked
 
-## Где что лежит
-| Что | Где | Когда читать |
-|-----|-----|--------------|
-| ADR | `documentation/ADR/` | Архитектурные ограничения |
-| Спецификации | `documentation/specifications/` | Контракты REST/Kafka — источник истины |
-| Архитектура | `documentation/architecture/` | Архитектурная модель системы в формате archimate (Archi) |
-| Сервисы | `application/` | Реализация |
-| Libs | `libs/` | Общие библиотеки и Gradle-gплагины |
-| Среды | `deployments/` | Деплой-конфиги |
+## Locations
+| What | Where | When |
+|------|-------|------|
+| ADR | `documentation/ADR/` | Architecture constraints |
+| Specs | `documentation/specifications/` | REST/Kafka contracts (source of truth) |
+| Architecture | `documentation/architecture/` | ArchiMate model |
+| Services | `application/` | Implementation |
+| Libs | `libs/` | Shared libs, Gradle plugins |
+| Deploy | `deployments/` | Environment configs |
 
-## Референсные сервисы (эталон реализации)
-| Задача | Смотреть |
-|--------|----------|
-| Паттерны реализации (без чтения кода) | `application/.cursor/skills/microservice-defaults/reference.md` |
-| CRUD + jOOQ + Flyway + OpenAPI codegen | `application/currency-valuables/currencies-crud` (только по явной просьбе) |
-| Интеграционные тесты + Testcontainers | `reference.md` + `libs/gradle/database-test-support` |
-| Спецификация сервиса | `specifications/microservices/currency-valuables/currencies-crud/` |
+## Reference services
+| Task | Look at |
+|------|---------|
+| Implementation patterns (no code read) | `application/.cursor/skills/microservice-defaults/reference.md` |
+| CRUD + jOOQ + Flyway + OpenAPI | `currencies-crud` (only if explicitly asked) |
+| Integration tests + Testcontainers | `reference.md` + `libs/gradle/database-test-support` |
+| Reference spec | `specifications/microservices/currency-valuables/currencies-crud/` |
 
-## Запрещено без явной просьбы
-- Полный обход всех корней workspace
-- Чтение build/, bin/, .gradle/, target/
-- Заглядывать в соседние ветки репозитория
-- Дублирование содержимого ADR в ответ — ссылаться на файл
-- Обзорный exploration и чтение `currencies-crud` для стандартных CRUD-задач (достаточно rule/skill/reference)
+## Forbidden unless asked
+- Full workspace sweep
+- Reading `build/`, `bin/`, `.gradle/`, `target/`
+- Other git branches
+- Copying ADR text into replies — link to file
+- Exploratory reads of `currencies-crud` for standard CRUD (rule/skill/reference is enough)

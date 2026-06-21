@@ -97,18 +97,18 @@ Query-параметры отбора по `timestamp with time zone` — по [
 
 | Зависимость | Для чего |
 | ----------- | -------- |
-| `com.vimpishsnorfle.rest:<service-artifact>` | Generated OpenAPI-контракты: интерфейсы `*Api`, request/response DTO |
-| `com.vimpishsnorfle.jooq:<schema-artifact>` | Generated jOOQ-модели БД: таблицы, `Record`, типобезопасные SQL-операции |
-| `com.vimpishsnorfle.jooq:jooq-query-support` | Общие runtime-helper'ы для листингов: сортировка `orderBy/asc/desc`, timestamp-range, типовые `Condition` |
-| `com.vimpishsnorfle.crud:crud-web-error-support` | Общий набор `BadRequest/NotFound/Conflict` и базовый `GlobalExceptionHandler`-шаблон |
+| `com.pitipiwpiw-wiw-wiw.rest:<service-artifact>` | Generated OpenAPI-контракты: интерфейсы `*Api`, request/response DTO |
+| `com.pitipiwpiw-wiw-wiw.jooq:<schema-artifact>` | Generated jOOQ-модели БД: таблицы, `Record`, типобезопасные SQL-операции |
+| `com.pitipiwpiw-wiw-wiw.jooq:jooq-query-support` | Общие runtime-helper'ы для листингов: сортировка `orderBy/asc/desc`, timestamp-range, типовые `Condition` |
+| `com.pitipiwpiw-wiw-wiw.crud:crud-web-error-support` | Общий набор `BadRequest/NotFound/Conflict` и базовый `GlobalExceptionHandler`-шаблон |
 | `org.springframework.boot:spring-boot-starter-web` | REST runtime (контроллеры, валидация входных данных, сериализация HTTP) |
 | `org.springframework.boot:spring-boot-starter-jooq` | Интеграция Spring + jOOQ (`DSLContext`, транзакции, data-access слой) |
 | `org.springframework.boot:spring-boot-starter-validation` | Bean Validation для query/path/body параметров |
-| `com.vimpishsnorfle.database-test` (Gradle plugin) + `com.vimpishsnorfle.test:database-test-support` | Единый тестовый PostgreSQL-контур через prebaked image и Testcontainers |
+| `com.pitipiwpiw-wiw-wiw.database-test` (Gradle plugin) + `com.pitipiwpiw-wiw-wiw.test:database-test-support` | Единый тестовый PostgreSQL-контур через prebaked image и Testcontainers |
 
 Примечание:
 
-- Для сервисов с Kafka дополнительно подключаются generated messaging-артефакты `com.vimpishsnorfle.messaging:*` и runtime-библиотеки по роли сервиса.
+- Для сервисов с Kafka дополнительно подключаются generated messaging-артефакты `com.pitipiwpiw-wiw-wiw.messaging:*` и runtime-библиотеки по роли сервиса.
 - Версии артефактов фиксируются в `build.gradle.kts` конкретного сервиса и должны быть совместимы между generated REST/jOOQ и схемой БД.
 
 ### 2. Профиль `lookup`

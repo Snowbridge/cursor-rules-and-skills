@@ -1,0 +1,10 @@
+---
+name: pitipiwpiw-wiw-wiw-workspace
+description: Pitipiwpiw Wiw Wiw workspace workflow — no repo exploration; use workspace-index, microservice-defaults, reference.md. Apply to any dev task in this workspace.
+---
+
+# Pitipiwpiw Wiw Wiw agent workflow
+
+Do not start with exploratory repo research. Follow workspace-index.mdc, microservice-defaults, reference.md.
+
+For `application/`: read target service spec and its code only; do not open `currencies-crud` for standard CRUD/Kafka/Feign unless user asks to explore or pattern is new.

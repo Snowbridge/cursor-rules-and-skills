@@ -1,88 +1,56 @@
 ---
 name: java-kotlin-typed-dto-messaging
-description: Requires type-safe generated DTOs for Kafka, REST, and jOOQ database access in Java/Kotlin/Spring projects. Use when implementing Kafka/REST/Feign, repositories, jOOQ queries, or when the user mentions messaging schemas, OpenAPI, generated artifacts, or database mappings.
+description: Type-safe generated DTOs for Kafka, REST, jOOQ in Java/Kotlin/Spring. Use for Kafka/REST/Feign, repositories, jOOQ, OpenAPI, messaging schemas.
 ---
 
-# Java/Kotlin + Spring: typed contracts (Kafka, REST, jOOQ)
+# Typed contracts (Kafka, REST, jOOQ)
 
 ## Rule
 
-Обязательно использовать **типобезопасные** контракты и маппинги — без «сырых» структур и строк там, где платформа даёт generated-типы.
+Use **type-safe** generated contracts — no raw maps/strings where platform provides types.
 
-**Единственное исключение** — если пользователь **прямо в тексте задачи** разрешил отступление.
+**Exception:** user explicitly allows deviation in task.
 
-Если задачу **нельзя решить типобезопасно** и явного разрешения нет — **прервать выполнение** и сообщить, что мешает и что нужно (разрешение или доработка артефакта/схемы).
+If not type-safe without permission — **stop**; state blocker and need (permission or schema/artifact work).
 
----
+## Kafka & REST
 
-## Kafka и REST
+Generated artifacts: `com.pitipiwpiw-wiw-wiw.messaging:*`, `com.pitipiwpiw-wiw-wiw.rest:*`.
 
-Для **всех** случаев работы с Kafka и REST — **типобезопасные DTO** для сериализации и десериализации передаваемых или получаемых объектов.
+**Forbidden** (unless allowed):
+- `Map<String, Any>` / `Object` / raw JSON as contract body
+- `MessageBuilder.withPayload(mapOf(...))`, `StreamBridge.send` with map
+- Bypassing generated `*Api` and messaging schemas
 
-Источник: заранее сгенерированные артефакты (`com.vimpishsnorfle.messaging:*`, `com.vimpishsnorfle.rest:*`), не ручная сборка «на лету».
+**Kafka:** `Consumer<Message<Dto>>` or generated consumer; producer uses messaging DTO. Name clashes across artifacts — separate modules/aliases, not `Map`.
 
-**Запрещено** (без явного разрешения в задаче):
-- `Map<String, Any>`, `LinkedHashMap`, `Map<String, Object>` как тело сообщения или REST-контракт
-- `MessageBuilder.withPayload(mapOf(...))` / `StreamBridge.send` с map вместо DTO
-- `Object`, `Any`, сырой JSON (`String`/`JsonNode`) там, где есть generated-тип
-- Обход generated REST API (`*Api`) и messaging-схем
+**REST:** controller `implements *Api`; Feign `interface Client : V1*ControllerApi`; no manual OpenAPI duplicates.
 
-### Kafka
+## jOOQ
 
-1. Consumer: `Consumer<Message<ConcreteDto>>`, тип из `com.vimpishsnorfle.messaging:*`.
-2. Producer: payload — generated messaging DTO по схеме топика.
-3. При конфликте одноимённых классов в нескольких messaging-артефактах — **не** сваливаться в `Map`; отдельные модули, alias imports, общий артефакт, или остановка с запросом уточнения.
+Generated `com.pitipiwpiw-wiw-wiw.jooq:*` — no raw SQL.
 
-### REST
+**Forbidden:** `dsl.fetch("SELECT...")`, native `@Query`, `jdbcTemplate`, string SQL assembly.
 
-1. Controllers: `implements` generated `*Api`, DTO из `com.vimpishsnorfle.rest:*.model.*`.
-2. Feign: `interface Client : V1*ControllerApi` — те же request/response DTO.
-3. Не дублировать OpenAPI-модели ручными data class.
+**Required:** `DSLContext` + generated tables/columns/records; DSL close to SQL (`selectFrom`, `where`, `join`).
 
----
+Missing table → stop; need migration + jOOQ regen, not raw SQL workaround.
 
-## jOOQ (БД)
-
-Для доступа к БД — **типобезопасные jOOQ-маппинги** на основе сгенерированного артефакта (например `com.vimpishsnorfle.jooq:*`), а не SQL текстом.
-
-**Запрещено** (без явного разрешения в задаче):
-- SQL-запросы в «сыром виде»: `dsl.fetch("SELECT ...")`, `execute("UPDATE ...")`, `@Query` с нативным SQL, `jdbcTemplate`, строковая конкатенация SQL
-- Динамическая сборка SQL кусками строк вместо jOOQ DSL
-- Обход generated `tables.*`, `Keys`, `Records`, `Pojos` там, где jOOQ-артефакт доступен
-
-**Требуется:**
-1. `DSLContext` + generated table/column references (`CURRENCIES.UUID.eq(...)`).
-2. DTO/Record из jOOQ codegen (`*Record`, `tables.pojos.*`) для чтения и записи.
-3. Запросы максимально близки к SQL через DSL (`selectFrom`, `where`, `join`), без лишней императивной сборки условий, если это можно выразить декларативно.
-
-Если jOOQ не покрывает кейс (нет таблицы в артефакте, нужна миграция) — остановиться: нужна миграция + пересборка jOOQ, не raw SQL как обход.
-
----
-
-## Антипримеры
+## Examples
 
 ```kotlin
-// BAD — Kafka: map вместо messaging DTO
+// BAD
 private fun buildEnvelope(...): Map<String, Any> { ... }
+dsl.fetch("SELECT * FROM ... WHERE uuid = ?", uuid)
 
-// BAD — jOOQ: сырой SQL
-dsl.fetch("SELECT * FROM currency_valuables.currencies WHERE uuid = ?", uuid)
-
-// GOOD — jOOQ
+// GOOD
 dsl.selectFrom(CURRENCIES).where(CURRENCIES.UUID.eq(uuid)).fetchOne()
-```
-
-```kotlin
-// GOOD — messaging DTO
 fun toAddedMessage(record: CurrenciesClassifierRecord): CurrenciesClassifierElementAddedMessage = ...
 ```
 
----
+## Before done
 
-## Проверка перед завершением
-
-- [ ] Kafka produce/consume — generated messaging DTO
-- [ ] REST/Feign — generated REST DTO и `*Api`
-- [ ] БД — только jOOQ DSL + generated tables/records/pojos; нет raw SQL
-- [ ] В diff нет `Map<String, Any>` для контрактов и нет строкового SQL
-- [ ] Отступления — только при явном разрешении в задаче
+- [ ] Kafka/REST/Feign — generated DTO + `*Api`
+- [ ] DB — jOOQ DSL only; no raw SQL
+- [ ] No `Map<String, Any>` for contracts in diff
+- [ ] Deviations only with explicit task permission

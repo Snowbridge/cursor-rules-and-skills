@@ -1,68 +1,68 @@
 ---
-description: Формат спецификаций микросервисов (Markdown, OpenAPI, Kafka)
+description: Microservice spec format (Markdown, OpenAPI, Kafka)
 globs: services/**/*,messaging/**/*,decision-models/**/*
 alwaysApply: true
 ---
 
-# Спецификации микросервисов
+# Microservice specifications
 
-Репозиторий `analytics` — **источник истины** для контрактов.
+Repo `analytics` is the **source of truth** for contracts.
 
-## Структура каталога `microservices/<группы сервиса>/<имя-сервиса>/`
+## Layout `microservices/<group>/<service>/`
 
-| Файл | Назначение |
-|------|------------|
-| `index.md` или `readme.md` | Назначение + оглавление (reference-style ссылки) |
-| `openapi.yaml` | REST: OpenAPI 3.0, русские описания, `servers` с `http://<сервис>:8080/` и localhost |
-| `*-controller.md`, `rest.md`, `consumer.md` | Алгоритмы эндпоинтов / консьюмеров |
-| `async.md` | Kafka: топики, фильтр по `type`, begin/result |
+| File | Purpose |
+|------|---------|
+| `index.md` / `readme.md` | Overview + TOC (reference-style links) |
+| `openapi.yaml` | REST: OpenAPI 3.0, Russian descriptions, `servers` with `http://<service>:8080/` and localhost |
+| `*-controller.md`, `rest.md`, `consumer.md` | Endpoint/consumer algorithms |
+| `async.md` | Kafka: topics, `type` filter, begin/result |
 
-Связанные артефакты: `messaging/<группы топиков>/<топик>/<тип>.yaml`.
+Messaging artifacts: `messaging/<topic-group>/<topic>/<type>.yaml`.
 
 ## Markdown
 
-- Язык: **русский**; имена DTO — как в OpenAPI.
-- Ссылки — **reference-style** в конце (`<!-- LINKS -->`).
-- Каждая операция: `##`, строка `` `METHOD /path` ``, таблица параметров (обязательные — **📌**), блок **«Алгоритм работы:»** (нумерованный список).
-- Платформенные REST-соглашения (HTTP-коды, naming, пагинация, сортировка списков, soft delete, фильтры по дате) — в ADR ([ADR-26061701](../../../ADR/ADR-26061701-rest-crud-platform-conventions.md), [ADR-26060701](../../../ADR/ADR-26060701-soft-delete-deleted-at.md), [ADR-26061501](../../../ADR/ADR-26061501-rest-timestamp-range-query-filters.md), [ADR-26061702](../../../ADR/ADR-26061702-rest-record-validity-and-archival.md)); **не копировать** их в каждый файл.
+- **Spec prose: Russian**; DTO names match OpenAPI.
+- Reference-style links at end (`<!-- LINKS -->`).
+- Per operation: `##`, `` `METHOD /path` ``, param table (required **📌**), **«Алгоритм работы:»** numbered list.
+- Platform REST rules (HTTP codes, naming, pagination, sort, soft delete, date filters) — in ADR ([ADR-26061701](../../../ADR/ADR-26061701-rest-crud-platform-conventions.md), [ADR-26060701](../../../ADR/ADR-26060701-soft-delete-deleted-at.md), [ADR-26061501](../../../ADR/ADR-26061501-rest-timestamp-range-query-filters.md), [ADR-26061702](../../../ADR/ADR-26061702-rest-record-validity-and-archival.md)); **do not duplicate** in each file.
 
-### Преамбула `*-controller.md` / `REST.md`
+### Preamble `*-controller.md` / `REST.md`
 
 ```markdown
-HTTP-контракт описан в [openapi.yaml](./openapi.yaml).
+HTTP contract: [openapi.yaml](./openapi.yaml).
 
-Общие соглашения REST — [ADR-26061701](…/ADR-26061701-rest-crud-platform-conventions.md) (профиль `crud-default`), [ADR-26060701](…), [ADR-26061501](…).
+Platform REST: [ADR-26061701](…/ADR-26061701-rest-crud-platform-conventions.md) (`crud-default`), [ADR-26060701](…), [ADR-26061501](…).
 
-### Дельты данного контроллера
+### Controller deltas
 
-- (только отличия: доп. причины 400/404/409, доменные правила, ссылка на ADR-26061702 / ADR-26061401 при необходимости)
+- (only differences: extra 400/404/409, domain rules, ADR-26061702 / ADR-26061401 if needed)
 ```
 
-Перечень ADR можно вынести в `index.md` сервиса, если контроллеров несколько; в `*-controller.md` — ссылка на `index.md` и секция «Дельты».
+Multiple controllers → ADR list in service `index.md`; in `*-controller.md` link `index.md` + «Дельты» section.
 
-### Алгоритмы (`REST.md`, `async.md`, `*-controller.md`, `consumer.md`)
+### Algorithms (`REST.md`, `async.md`, `*-controller.md`, `consumer.md`)
 
-- Изложение — **только на русском языке** (связный текст или нумерованный список предложений).
-- **Запрещено** описывать алгоритм кодом: SQL и другие запросы к БД, псевдокод на языках программирования, блоки с подсветкой синтаксиса.
-- Допустимы inline-упоминания имён полей БД и JSON, query/path-параметров, кодов HTTP, путей API и ссылок на схемы OpenAPI.
+- **Russian prose only** (sentences or numbered list).
+- **No code** in algorithms: SQL, pseudocode, syntax-highlighted blocks.
+- Inline field names, params, HTTP codes, API paths, OpenAPI refs OK.
 
 ## OpenAPI
 
-Синхронизировать с `.md`: те же пути, коды ответов, схемы, примеры для 409/404. Переиспользовать `$ref` (`UncaughtException`, `traceId`, `spanId`).
+Sync with `.md`: same paths, response codes, schemas, 409/404 examples. Reuse `$ref` (`UncaughtException`, `traceId`, `spanId`).
 
 ## Kafka
 
-- Топик = имя каталога в `messaging/`.
-- `async.md`: списки consume/produce; фильтр `headers.type`; иначе тихий выход без публикации.
-- Заголовки `key`, `type`, `createdAt`, `schemaVersion` — только в `headers`, не дублировать в теле.
+- Topic = folder name under `messaging/`.
+- `async.md`: consume/produce lists; filter `headers.type`; else silent exit, no publish.
+- Headers `key`, `type`, `createdAt`, `schemaVersion` — headers only, not in body.
 
-## Шаблоны по роли
+## Templates
 
-- Много REST-групп → `index.md` + `*-controller.md`.
-- Компактный сервис → `readme.md`.
+- Many REST groups → `index.md` + `*-controller.md`
+- Small service → `readme.md`
 
-## При составлении спецификации
+## When writing specs
 
-1. Не выдумывать эндпоинты и поля вне задачи; при нехватке данных — список вопросов до черновика.
-2. Перечислить файлы для создания/изменения с путями от `analytics/`.
-3. Дать полное содержимое новых/изменённых файлов.
+1. No invented endpoints/fields; ask questions before draft if data missing.
+2. List files to create/change with paths from `analytics/`.
+3. Provide full content of new/changed files.

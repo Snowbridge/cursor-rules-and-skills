@@ -1,70 +1,45 @@
 ---
 name: microservice-defaults
-description: Задаёт дефолтные требования к микросервисам в application/ (Kotlin, Spring Boot, jOOQ, generated REST/Kafka DTO, Feign, логирование, покрытие тестами 70%). Сначала читай reference.md, не исследуй repo. Применять при создании, доработке или ревью микросервисов в application/, если пользователь явно не указал иное.
+description: Default microservice requirements in application/ (Kotlin, Spring Boot, jOOQ, generated REST/Kafka DTO, Feign, logging, 70% tests). Read reference.md first; do not explore repo. Use for create/update/review in application/ unless user overrides.
 ---
 
-# Дефолтные требования к микросервисам
+# Microservice defaults
 
-## Когда применять
+## When to apply
 
-При любой задаче в `application/<группа>/<сервис>/`, если пользователь **не переопределил** требования в промпте.
+Tasks in `application/<group>/<service>/` unless user overrides in prompt.
 
-Перед реализацией: спецификация в `documentation/specifications/microservices/...` — источник истины для контрактов. Детали паттернов реализации — [reference.md](./reference.md); открывать `application/currency-valuables/currencies-crud` только по явной просьбе или при новом паттерне.
+Contracts: `documentation/specifications/microservices/...`. Patterns: [reference.md](./reference.md). Open `currencies-crud` only if asked or new pattern.
 
-## Порядок работы без повторного исследования
+## Workflow (no re-exploration)
 
-1. Прочитать [reference.md](./reference.md) — паттерны уже зафиксированы, не исследовать repo.
-2. Прочитать spec целевого сервиса: `documentation/specifications/microservices/<группа>/<сервис>/`.
-3. При необходимости — релевантные ADR из `documentation/ADR/index.md` (только по теме).
-4. Если сервис уже существует — читать только его код в `application/<группа>/<сервис>/`.
-5. Реализовать по требованиям ниже и rule `application/.cursor/rules/microservice-implementation.mdc`.
+1. Read [reference.md](./reference.md) — do not explore repo.
+2. Read target spec: `documentation/specifications/microservices/<group>/<service>/`.
+3. ADR from `documentation/ADR/index.md` if needed (topic only).
+4. If service exists — read only `application/<group>/<service>/`.
+5. Implement per below + rule `microservice-implementation.mdc`.
 
----
+## Requirements
 
-## Общие требования
+1. Stack: kotlin, spring-boot, kafka, postgres
+2. jOOQ: generated `com.pitipiwpiw-wiw-wiw.jooq:*`; no raw SQL; prefer DSL close to SQL, avoid imperative query assembly
+3. REST: generated `com.pitipiwpiw-wiw-wiw.rest:*` DTO and `*Api`
+4. Kafka: generated `com.pitipiwpiw-wiw-wiw.messaging:*`
+5. Outbound REST: OpenFeign + `com.pitipiwpiw-wiw-wiw.rest` DTO/interfaces
+6. Logging (SLF4J/logback): log key decisions and outcomes; traceable what/why
+7. Tests: ≥70% line coverage (jacoco)
+8. DRY, SRP
 
-По умолчанию, если в задаче явно не указано иное, все микросервисы подчиняются общим требованиям:
+## Patterns
 
-1. Стэк: kotlin, spring, spring-boot, kafka, postgres
-2. Для доступа к БД используй jOOQ:
-    1. используй заранее сгенерированные DTO из implementation("com.vimpishsnorfle.jooq:*")
-    2. SQL-запросы в "сыром виде" запрещены, всегда используй jOOQ-маппинги;
-    3. Запросы на основе маппингов должны быть максимально приближены к SQL и везде, где это это вообще возможно, следует избегать сборки запроса кодом из кусков.
-3. Так же используй заранее сгенерированные DTO и REST-интерфейсы вебсервисов из implementation("com.vimpishsnorfle.rest:*")
-4. Для работы с топиками Kafka используй точно так же заранее сгенерированые DTO implementation("com.vimpishsnorfle.messaging:*")
-5. Для выполнения REST-запросов во вне и в соседние сервисы исползуй OpenFeign на основе DTO и интерфейсов из группы `com.vimpishsnorfle.rest`
-6. Для логирования используй logback и SLF4J:
-    1. сервисы должны в лог записывать все ключевые решения, которые принимает код и полученные ключевые результаты;
-    2. из лога должно быть понятно, что сервис сделал и почему.
-7. Каждый сервис должен быть покрыт тестами не менее, чем на 70% по строкам.
-8. При реализации соблюдай принципам DRY и SRP
+**REST/Feign:** controller `implements *Api`; Feign `interface Client : V1*ControllerApi` — no manual OpenAPI duplicates.
 
----
+**Kafka:** `Consumer<Message<Dto>>` or generated consumer; producer uses messaging DTO.
 
-## Практические ориентиры
+**Tests:** jacoco 0.70 on `check`; `database-test` + Testcontainers — see [reference.md](./reference.md).
 
-Следующие пункты **не заменяют** требования выше — только конкретизируют принятые в репозитории паттерны.
+**Logging:** `LoggerFactory.getLogger(javaClass)`; `info` decisions/outcomes, `debug` inputs/steps, `warn`/`error` with entity ids + cause.
 
-### REST и Feign
+## Deviations
 
-- Контроллер: `implements` generated `*Api`, DTO из `com.vimpishsnorfle.rest:*.model.*`.
-- Feign-клиент: `interface XxxClient : V1*ControllerApi` — те же DTO, без ручных дубликатов OpenAPI-моделей.
-
-### Kafka
-
-- Consumer: `Consumer<Message<ConcreteDto>>`, тип из `com.vimpishsnorfle.messaging:*`.
-- Producer: payload — generated messaging DTO по схеме топика.
-
-### Покрытие тестами (п. 7)
-
-- Плагин `jacoco`, `jacocoTestCoverageVerification` с `minimum = "0.70".toBigDecimal()`, `check` зависит от верификации — см. [reference.md](./reference.md).
-- Интеграционные тесты с БД: плагин `com.vimpishsnorfle.database-test`, Testcontainers — см. [reference.md](./reference.md).
-
-### Логирование (п. 6)
-
-- `private val log = LoggerFactory.getLogger(javaClass)` (или аналог в Kotlin).
-- Уровни: `info` — ключевые решения и итоги; `debug` — входные данные и промежуточные шаги; `warn`/`error` — отклонения и сбои с контекстом (идентификаторы сущностей, причина).
-
-### Исключения из дефолтов
-
-Если задачу **нельзя** выполнить в рамках требований (нет артефакта, нет таблицы в jOOQ и т.д.) и пользователь **не разрешил** отступление — остановиться и сообщить, что нужно: доработка схемы/миграции/артефакта или явное разрешение в промпте.
+If blocked (missing artifact, jOOQ table, etc.) and user did not allow — stop; state need: schema/migration/artifact or explicit prompt permission.
