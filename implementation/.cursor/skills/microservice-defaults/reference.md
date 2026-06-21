@@ -10,7 +10,7 @@ Reference: `application/currency-valuables/currencies-crud`. Spec: `documentatio
 |------|---------|---------|
 | Dir | `application/<group>/<service>/` | `application/product-factory/references-crud/` |
 | Application | `<Group><Service>Application` | `ProductFactoryReferencesCrudApplication` |
-| Package | `com.pitipiwpiw-wiw-wiw.<group>.<service>` | `com.pitipiwpiw-wiw-wiw.productFactory.referencesCrud` |
+| Package | `com.vimpishsnorfle.<group>.<service>` | `com.vimpishsnorfle.productFactory.referencesCrud` |
 
 ## Package layout (reference)
 
@@ -50,15 +50,15 @@ plugins {
     kotlin("plugin.spring") version "2.1.20"
     id("org.springframework.boot") version "3.5.14"
     id("io.spring.dependency-management") version "1.1.7"
-    id("com.pitipiwpiw-wiw-wiw.database-test") version "0.1.0"
-    id("com.pitipiwpiw-wiw-wiw.jib") version "0.1.0"
+    id("com.vimpishsnorfle.database-test") version "0.1.0"
+    id("com.vimpishsnorfle.jib") version "0.1.0"
     jacoco
 }
 ```
 
 Java 21. `extra["springCloudVersion"] = "2025.0.2"`.
 
-Typical deps: `com.pitipiwpiw-wiw-wiw.rest:*`, `jooq:*`, `messaging:*`, `crud-web-error-support:0.1.0`, `jooq-query-support:0.1.0`.
+Typical deps: `com.vimpishsnorfle.rest:*`, `jooq:*`, `messaging:*`, `crud-web-error-support:0.1.0`, `jooq-query-support:0.1.0`.
 
 ## jacoco (70%)
 
@@ -79,7 +79,7 @@ tasks.check { dependsOn(tasks.jacocoTestCoverageVerification) }
 ## gradle.properties (database-test)
 
 ```properties
-databaseImage=pitipiwpiwwiwwiw/<schema-group>-postgres
+databaseImage=vimpishsnorfle/<schema-group>-postgres
 databaseImageTag=<version>
 ```
 
@@ -105,7 +105,7 @@ class V1CurrencyController(...) : V1CurrencyControllerApi {
 }
 ```
 
-API: `com.pitipiwpiw-wiw-wiw.rest.<group>.<service>.api.V1*ControllerApi`  
+API: `com.vimpishsnorfle.rest.<group>.<service>.api.V1*ControllerApi`  
 DTO: `...model.*`
 
 ## GlobalExceptionHandler
@@ -141,7 +141,7 @@ class ClassifierArchivedKafkaConsumer(...) : CurrenciesClassifierElementArchived
 }
 ```
 
-Types: `com.pitipiwpiw-wiw-wiw.messaging.<Group>.<Topic>.*`
+Types: `com.vimpishsnorfle.messaging.<Group>.<Topic>.*`
 
 ## TestcontainersConfiguration
 
